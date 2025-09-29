@@ -4,57 +4,24 @@
   <meta charset="UTF-8">
   <title>Wedding Dance Registration</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
   <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #fff8f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin: 0;
-      padding: 20px;
-    }
+    body { font-family: "Segoe UI", Arial, sans-serif; background: #fff8f9; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
     h2 { color: #d63384; margin-bottom: 15px; }
-    form {
-      background: #fff;
-      padding: 15px 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      width: 350px;
-      margin-bottom: 15px;
-    }
+    form { background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); width: 350px; margin-bottom: 15px; }
     label { font-weight: 600; font-size: 0.9rem; margin-top: 8px; display: block; color: #444; }
-    input, select {
-      margin: 5px 0 12px;
-      padding: 7px;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-    button {
-      background: #d63384; color: white; border: none;
-      padding: 6px 12px; border-radius: 20px;
-      font-size: 0.85rem; cursor: pointer; margin: 5px 3px;
-      transition: background 0.2s;
-    }
+    input, select { margin: 5px 0 12px; padding: 7px; width: 100%; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
+    button { background: #d63384; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; margin: 5px 3px; transition: background 0.2s; }
     button:hover { background: #b82c6f; }
     .small-btn { padding: 5px 10px; font-size: 0.8rem; }
     .results { width: 350px; margin-top: 10px; }
     .results h3 { margin: 10px 0; color: #b82c6f; font-size: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
-    .group, .solo {
-      background: #fff; border: 1px solid #eee;
-      border-radius: 8px; padding: 8px; margin: 6px 0;
-      font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+    .group, .solo { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px; margin: 6px 0; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     .delete-btn { background: #dc3545; margin-top: 5px; }
     .delete-btn:hover { background: #b02a37; }
-    .suggestions {
-      border: 1px solid #ccc; border-radius: 6px;
-      max-height: 120px; overflow-y: auto;
-      position: absolute; background: white;
-      width: 310px; z-index: 1000; font-size: 0.9rem;
-    }
+    .suggestions { border: 1px solid #ccc; border-radius: 6px; max-height: 120px; overflow-y: auto; position: absolute; background: white; width: 310px; z-index: 1000; font-size: 0.9rem; }
     .suggestions div { padding: 6px; cursor: pointer; }
     .suggestions div:hover { background: #ffe6f0; }
   </style>
@@ -64,8 +31,7 @@
   
   <form id="registrationForm">
     <label>Name:</label>
-    <input type="text" id="name" placeholder="Enter your name" required>
-
+    <input type="text" id="name" placeholder='Enter your name' required>
     <label>Place:</label>
     <select id="place">
       <option value="Mandwada">Mandwada</option>
@@ -76,26 +42,21 @@
       <option value="Jawal">Jawal</option>
       <option value="Mandwariya">Mandwariya</option>
     </select>
-
     <label>Song Name:</label>
-    <input type="text" id="song" autocomplete="off" placeholder="Start typing.." required>
+    <input type="text" id="song" autocomplete="off" placeholder="Start typing..." required>
     <div id="songSuggestions" class="suggestions" style="display:none;"></div>
-
     <label>Password:</label>
-    <input type="password" id="password" placeholder="Enter any 4 digits password of your choice" required>
-
+    <input type="password" id="password" placeholder="Enter any 4 digit password " required>
     <label>Dance Type:</label>
     <select id="danceType" required>
       <option value="solo">Solo Dance</option>
       <option value="group">Group Dance</option>
     </select>
-
     <div id="groupOptions" style="display:none;">
       <label>Choose Group:</label>
       <select id="groupSelect"></select>
       <small style="font-size:0.75rem; color:#777;">Or leave empty to create a new group with this song</small>
     </div>
-
     <button type="submit" class="small-btn">Register</button>
   </form>
 
@@ -103,12 +64,22 @@
     <button onclick="showSolo()" class="small-btn">Show Solo</button>
     <button onclick="showGroups()" class="small-btn">Show Groups</button>
   </div>
-
   <div class="results" id="results"></div>
 
   <script>
-    let soloParticipants = JSON.parse(localStorage.getItem("solo")) || [];
-    let groups = JSON.parse(localStorage.getItem("groups")) || [];
+    // 🔑 Your Firebase Config (replace with your own!)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDFwHFjliIrfmpryaR0BRNwR8hTyJec93A",
+      authDomain: "weddingdanceregistration.firebaseapp.com",
+      projectId: "weddingdanceregistration",
+      storageBucket: "weddingdanceregistration.firebasestorage.app",
+      messagingSenderId: "1034248056189",
+      appId: "1:1034248056189:web:7ee93b22fd850b04a8f014"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
     const form = document.getElementById("registrationForm");
     const danceType = document.getElementById("danceType");
@@ -116,42 +87,8 @@
     const groupSelect = document.getElementById("groupSelect");
     const songInput = document.getElementById("song");
     const passInput = document.getElementById("password");
-    const suggestionBox = document.getElementById("songSuggestions");
 
-    // Auto-suggestion using iTunes API
-    let timer;
-    songInput.addEventListener("input", () => {
-      clearTimeout(timer);
-      const query = songInput.value.trim();
-      if (query.length < 2) { suggestionBox.style.display = "none"; return; }
-      timer = setTimeout(async () => {
-        try {
-          const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicTrack&limit=7`);
-          const data = await res.json();
-          suggestionBox.innerHTML = "";
-          if (data.results.length > 0) {
-            suggestionBox.style.display = "block";
-            data.results.forEach(song => {
-              const div = document.createElement("div");
-              div.textContent = song.trackName + " - " + song.artistName;
-              div.onclick = () => {
-                songInput.value = song.trackName + " - " + song.artistName;
-                suggestionBox.style.display = "none";
-              };
-              suggestionBox.appendChild(div);
-            });
-          } else { suggestionBox.style.display = "none"; }
-        } catch (err) { console.error("Error fetching songs", err); }
-      }, 400);
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!songInput.contains(e.target) && !suggestionBox.contains(e.target)) {
-        suggestionBox.style.display = "none";
-      }
-    });
-
-    // Group logic
+    // Handle group select
     danceType.addEventListener("change", () => {
       if (danceType.value === "group") {
         groupOptions.style.display = "block";
@@ -163,28 +100,34 @@
       }
     });
 
+    function updateGroupSelect() {
+      db.ref("groups").once("value", snapshot => {
+        groupSelect.innerHTML = "<option value=''>--Create New Group--</option>";
+        snapshot.forEach(child => {
+          let g = child.val();
+          if (g.members && Object.keys(g.members).length < 10) {
+            let opt = document.createElement("option");
+            opt.value = child.key;
+            opt.textContent = g.song + " (Members: " + Object.keys(g.members).length + ")";
+            groupSelect.appendChild(opt);
+          }
+        });
+      });
+    }
+
     groupSelect.addEventListener("change", () => {
       if (groupSelect.value !== "") {
-        songInput.disabled = true;
-        passInput.disabled = true;
-        songInput.value = groups[groupSelect.value].song;
+        db.ref("groups/" + groupSelect.value).once("value", snapshot => {
+          let g = snapshot.val();
+          songInput.value = g.song;
+          songInput.disabled = true;
+          passInput.disabled = true;
+        });
       } else {
         songInput.disabled = false;
         passInput.disabled = false;
       }
     });
-
-    function updateGroupSelect() {
-      groupSelect.innerHTML = "<option value=''>--Create New Group--</option>";
-      groups.forEach((g, i) => {
-        if (g.members.length < 10) {
-          let opt = document.createElement("option");
-          opt.value = i;
-          opt.textContent = g.song + " (Members: " + g.members.length + ")";
-          groupSelect.appendChild(opt);
-        }
-      });
-    }
 
     // Register
     form.addEventListener("submit", (e) => {
@@ -196,23 +139,16 @@
       const type = danceType.value;
 
       if (type === "solo") {
-        soloParticipants.push({ name, place, song, password });
-        localStorage.setItem("solo", JSON.stringify(soloParticipants));
+        db.ref("solo").push({ name, place, song, password });
         Swal.fire("Success!", "Registered for Solo Dance 🎶", "success");
       } else {
         const groupChoice = groupSelect.value;
         if (groupChoice !== "") {
-          let group = groups[groupChoice];
-          if (group.members.length < 10) {
-            group.members.push({ name, place });
-          } else {
-            Swal.fire("Oops!", "This group is already full!", "error");
-            return;
-          }
+          db.ref("groups/" + groupChoice + "/members").push({ name, place });
         } else {
-          groups.push({ song, password, members: [{ name, place }] });
+          let newGroup = db.ref("groups").push();
+          newGroup.set({ song, password, members: { [Date.now()]: { name, place } } });
         }
-        localStorage.setItem("groups", JSON.stringify(groups));
         Swal.fire("Success!", "Registered for Group Dance 👯", "success");
       }
 
@@ -222,15 +158,18 @@
       passInput.disabled = false;
     });
 
-    // Show solos
+    // Show solo
     function showSolo() {
       let results = document.getElementById("results");
       results.innerHTML = "<h3>Solo Dance Participants</h3>";
-      soloParticipants.forEach((p, i) => {
-        results.innerHTML += `<div class="solo">
-          ${p.name} (${p.place})<br><small>${p.song}</small><br>
-          <button class="delete-btn small-btn" onclick="deleteSolo(${i})">Delete</button>
-        </div>`;
+      db.ref("solo").once("value", snapshot => {
+        snapshot.forEach(child => {
+          let p = child.val();
+          results.innerHTML += `<div class="solo">
+            ${p.name} (${p.place})<br><small>${p.song}</small><br>
+            <button class="delete-btn small-btn" onclick="deleteSolo('${child.key}', '${p.password}')">Delete</button>
+          </div>`;
+        });
       });
     }
 
@@ -238,17 +177,20 @@
     function showGroups() {
       let results = document.getElementById("results");
       results.innerHTML = "<h3>Group Dance Participants</h3>";
-      groups.forEach((g, i) => {
-        results.innerHTML += `<div class="group">
-          <strong>Group ${i+1} - ${g.song}</strong><br>
-          ${g.members.map(m => `${m.name} (${m.place})`).join("<br>")}
-          <br><button class="delete-btn small-btn" onclick="deleteGroup(${i})">Delete Group</button>
-        </div>`;
+      db.ref("groups").once("value", snapshot => {
+        snapshot.forEach(child => {
+          let g = child.val();
+          let members = Object.values(g.members || {}).map(m => `${m.name} (${m.place})`).join("<br>");
+          results.innerHTML += `<div class="group">
+            <strong>${g.song}</strong><br>${members}<br>
+            <button class="delete-btn small-btn" onclick="deleteGroup('${child.key}', '${g.password}')">Delete Group</button>
+          </div>`;
+        });
       });
     }
 
-    // Delete solo performer
-    async function deleteSolo(index) {
+    // Delete solo
+    async function deleteSolo(key, pass) {
       const { value: enteredPass } = await Swal.fire({
         title: "Enter password",
         input: "password",
@@ -256,9 +198,8 @@
         showCancelButton: true
       });
       if (!enteredPass) return;
-      if (enteredPass === soloParticipants[index].password) {
-        soloParticipants.splice(index, 1);
-        localStorage.setItem("solo", JSON.stringify(soloParticipants));
+      if (enteredPass === pass) {
+        db.ref("solo/" + key).remove();
         Swal.fire("Deleted!", "Solo entry removed ✅", "success");
         showSolo();
       } else {
@@ -267,7 +208,7 @@
     }
 
     // Delete group
-    async function deleteGroup(index) {
+    async function deleteGroup(key, pass) {
       const { value: enteredPass } = await Swal.fire({
         title: "Enter group password",
         input: "password",
@@ -275,9 +216,8 @@
         showCancelButton: true
       });
       if (!enteredPass) return;
-      if (enteredPass === groups[index].password) {
-        groups.splice(index, 1);
-        localStorage.setItem("groups", JSON.stringify(groups));
+      if (enteredPass === pass) {
+        db.ref("groups/" + key).remove();
         Swal.fire("Deleted!", "Group removed ✅", "success");
         showGroups();
       } else {
