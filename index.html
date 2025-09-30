@@ -91,6 +91,59 @@
     const songInput = document.getElementById("song");
     const passInput = document.getElementById("password");
 
+
+    // Song suggestions
+    // 🎵 Auto-suggestion using iTunes API
+let timer;
+const suggestionBox = document.getElementById("songSuggestions");
+
+songInput.addEventListener("input", () => {
+  clearTimeout(timer);
+  const query = songInput.value.trim();
+
+  if (query.length < 2) {
+    suggestionBox.style.display = "none";
+    return;
+  }
+
+  // Debounce (wait 400ms after typing)
+  timer = setTimeout(async () => {
+    try {
+      const res = await fetch(
+        `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=musicTrack&limit=7`
+      );
+      const data = await res.json();
+
+      suggestionBox.innerHTML = "";
+      if (data.results.length > 0) {
+        suggestionBox.style.display = "block";
+        data.results.forEach(song => {
+          const div = document.createElement("div");
+          div.textContent = song.trackName + " - " + song.artistName;
+          div.onclick = () => {
+            songInput.value = song.trackName + " - " + song.artistName;
+            suggestionBox.style.display = "none";
+          };
+          suggestionBox.appendChild(div);
+        });
+      } else {
+        suggestionBox.style.display = "none";
+      }
+    } catch (err) {
+      console.error("Error fetching songs:", err);
+    }
+  }, 400);
+});
+
+// Hide suggestion box if clicked outside
+document.addEventListener("click", (e) => {
+  if (!songInput.contains(e.target) && !suggestionBox.contains(e.target)) {
+    suggestionBox.style.display = "none";
+  }
+});
+
+
+
     // Handle group select
     danceType.addEventListener("change", () => {
       if (danceType.value === "group") {
