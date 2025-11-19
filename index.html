@@ -7,24 +7,225 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-  <style>
-    body { font-family: "Segoe UI", Arial, sans-serif; background: #fff8f9; display: flex; flex-direction: column; align-items: center; margin: 0; padding: 20px; }
-    h2 { color: #d63384; margin-bottom: 15px; }
-    form { background: #fff; padding: 15px 20px; border-radius: 12px; box-shadow: 0 3px 8px rgba(0,0,0,0.1); width: 350px; margin-bottom: 15px; }
-    label { font-weight: 600; font-size: 0.9rem; margin-top: 8px; display: block; color: #444; }
-    input, select { margin: 5px 0 12px; padding: 7px; width: 100%; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; }
-    button { background: #d63384; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; margin: 5px 3px; transition: background 0.2s; }
-    button:hover { background: #b82c6f; }
-    .small-btn { padding: 5px 10px; font-size: 0.8rem; }
-    .results { width: 350px; margin-top: 10px; }
-    .results h3 { margin: 10px 0; color: #b82c6f; font-size: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
-    .group, .solo { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 8px; margin: 6px 0; font-size: 0.9rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-    .delete-btn { background: #dc3545; margin-top: 5px; }
-    .delete-btn:hover { background: #b02a37; }
-    .suggestions { border: 1px solid #ccc; border-radius: 6px; max-height: 120px; overflow-y: auto; position: absolute; background: white; width: 310px; z-index: 1000; font-size: 0.9rem; }
-    .suggestions div { padding: 6px; cursor: pointer; }
-    .suggestions div:hover { background: #ffe6f0; }
-  </style>
+ <style>
+
+/* Elegant Background */
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  padding: 0;
+
+  background: linear-gradient(135deg, #f6f0e8, #faf7f2);
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Premium Title */
+h2 {
+  color: #5e4b3c;
+  font-size: 2rem;
+  margin-top: 35px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+
+  text-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Luxurious Glass Form */
+form {
+  width: 92%;
+  max-width: 430px;
+  margin-top: 25px;
+
+  padding: 28px;
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(16px);
+
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0px 10px 40px rgba(0,0,0,0.15);
+}
+
+/* Input Labels */
+label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #6d5a4a;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Fields */
+input, select {
+  width: 100%;
+  padding: 14px 16px;
+
+  font-size: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(180, 180, 180, 0.4);
+
+  background: rgba(255,255,255,0.8);
+  outline: none;
+
+  margin-bottom: 18px;
+
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+/* Premium Buttons */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 30px;
+
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #d4a017, #b58a11);
+  color: white;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  transition: 0.25s ease;
+  letter-spacing: 0.3px;
+}
+
+button:hover {
+  transform: translateY(-2px) scale(1.03);
+  background: linear-gradient(135deg, #b58a11, #8c6d0d);
+}
+
+/* Result Section */
+.results {
+  width: 92%;
+  max-width: 430px;
+  margin-top: 20px;
+}
+
+.results h3 {
+  color: #6b5645;
+  font-size: 1.2rem;
+  font-weight: 600;
+
+  padding-bottom: 6px;
+  border-bottom: 2px solid #d4a017;
+}
+
+/* Participant Cards */
+.group, .solo {
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(14px);
+
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+
+  color: #4a3d33;
+  font-size: 1rem;
+}
+
+/* Delete Button */
+.delete-btn {
+  background: #b5342f;
+}
+
+.delete-btn:hover {
+  background: #8e2723;
+}
+
+/* Song Suggestions */
+.suggestions {
+  width: 100%;
+  background: #ffffff;
+  max-height: 170px;
+  overflow-y: auto;
+
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.15);
+
+  position: absolute;
+  z-index: 100;
+
+  font-size: 0.95rem;
+}
+
+.suggestions div {
+  padding: 12px;
+  cursor: pointer;
+  color: #5a4a3e;
+}
+
+.suggestions div:hover {
+  background: #f3e8d8;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.7rem;
+    margin-top: 25px;
+  }
+
+  form {
+    padding: 22px;
+  }
+
+  button {
+    font-size: 1rem;
+    padding: 13px;
+  }
+
+  /* Premium Buttons */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 30px;
+
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(135deg, #d4a017, #b58a11);
+  color: white;
+
+  font-size: 1.05rem;
+  font-weight: 600;
+
+  transition: 0.25s ease;
+  letter-spacing: 0.3px;
+
+  margin: 10px 0;  /* FIXED SPACING */
+}
+
+/* Action Buttons Section */
+.action-buttons {
+  width: 92%;
+  max-width: 430px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;   /* FIXED COLLAPSING */
+  margin-top: 10px;
+}
+
+/* Individual Small Buttons */
+.small-btn {
+  padding: 12px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #d4a017, #b58a11);
+}
+
+}
+
+</style>
 </head>
 <body>
   <h2>Wedding Dance Registration 💃</h2>
